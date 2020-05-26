@@ -6,12 +6,6 @@ import pandas as pd
 DATA_PATH = "C:\\Users\\zifan\\OneDrive\\Desktop\\Zifan Xu\\Speech Recognition\\predict-wearer\\data\\001_0522.wav"
 LALBELS_PATH = "C:\\Users\\zifan\\OneDrive\\Desktop\\Zifan Xu\\Speech Recognition\\predict-wearer\\data\\001_0522.txt"
 
-if not os.path.exists(DATA_PATH):
-    raise RuntimeError("Data not found in the specified path: %s" %DATA_PATH)
-
-if not os.path.exists(LALBELS_PATH):
-    raise RuntimeError("Labels not found in the specified path: %s" %LALBELS_PATH)
-
 def load_full_frame(data_path = DATA_PATH, labels_path = LALBELS_PATH, sr = 8000):
     '''
     Load the data in 1D real-time sequence with labels for each of the
@@ -25,6 +19,13 @@ def load_full_frame(data_path = DATA_PATH, labels_path = LALBELS_PATH, sr = 8000
         y [ndarray] -- labels data
         sr [int] -- sample rate
     '''
+
+    if not os.path.exists(data_path):
+        raise RuntimeError("Data not found in the specified path: %s" %DATA_PATH)
+
+    if not os.path.exists(labels_path):
+        raise RuntimeError("Labels not found in the specified path: %s" %LALBELS_PATH)
+
     X, sr = librosa.load(data_path, sr = sr)
 
     # Labels appears in start time and end time and the annotation associate
