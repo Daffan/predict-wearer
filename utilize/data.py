@@ -48,8 +48,6 @@ def load_full_frame(data_path = DATA_PATH, labels_path = LALBELS_PATH, sr = 8000
             y[start_idx:end_idx, 0] = True
         elif label == 'O':
             y[start_idx:end_idx, 1] = True
-        else:
-            raise RuntimeError('Annotation not recognitable!')
 
     return X, y, sr
 

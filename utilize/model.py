@@ -30,11 +30,11 @@ class WearerModel(Model):
         self.deconv1 = Conv1D(100, kernel_size = 1, activation = 'relu')
         self.upsampling1 = UpSampling1D(size = 4)
         # decoder conv2
-        self.deconv1 = Conv1D(100, kernel_size = 1, activation = 'relu')
-        self.upsampling1 = UpSampling1D(size = 2)
+        self.deconv2 = Conv1D(100, kernel_size = 1, activation = 'relu')
+        self.upsampling2 = UpSampling1D(size = 2)
         # decoder conv3
-        self.deconv1 = Conv1D(100, kernel_size = 1, activation = 'relu')
-        self.upsampling1 = UpSampling1D(size = 2)
+        self.deconv3 = Conv1D(100, kernel_size = 1, activation = 'relu')
+        self.upsampling3 = UpSampling1D(size = 2)
         # one fully-connected layer
         self.dense0 = Dense(1, activation = 'relu')
         self.conv_dropout = Dropout(p)
@@ -64,8 +64,12 @@ class WearerModel(Model):
         x = self.conv_dropout(self.maxpool1(self.conv1(x)))
         x = self.conv_dropout(self.maxpool2(self.conv2(x)))
         x = self.conv_dropout(self.maxpool3(self.conv3(x)))
-        x = self.dense0(x)
+        x = self.conv_dropout(self.upsampling1(self.deconv1(x)))
+        x = self.conv_dropout(self.upsampling2(self.deconv2(x)))
+        x = self.conv_dropout(self.upsampling3(self.deconv3(x)))
+        # x = self.dense0(x)
         ## three layers bidirectional lstm
+
         x = self.bilstm1(x)
         x = self.bilstm2(x)
         x = self.bilstm3(x)
@@ -87,7 +91,7 @@ class WearerModel(Model):
 
 class ConvLSTM(Model):
 
-    def __init__(self, frame_length = 256, num_channels = 1):
+    def __init__(self, frame_length = 256, num_channels = 1, p = 0.2):
 
         super(ConvLSTM, self).__init__()
 
@@ -101,15 +105,17 @@ class ConvLSTM(Model):
 
         self.dense = Dense(1, activation = 'sigmoid')
 
+        self.dropout = Dropout(p)
+
     def call(self, x):
 
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = self.conv4(x)
+        x = self.dropout(self.conv1(x))
+        x = self.dropout(self.conv2(x))
+        x = self.dropout(self.conv3(x))
+        x = self.dropout(self.conv4(x))
 
-        x = self.lstm1(x)
-        x = self.lstm2(x)
+        x = self.dropout(self.lstm1(x))
+        x = self.dropout(self.lstm2(x))
 
         x = self.dense(x)
         x = x[:, -1, :]
